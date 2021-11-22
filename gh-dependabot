@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+set -e
+
+if ! type -p fzf >/dev/null; then
+  echo "fzf not found on the system" >&2
+  exit 1
+fi
+
+select_pr() {
+  gh pr list --json number,author,title \
+    --jq '.[] | select(.author.login == "dependabot") | "#" + (.number|tostring) + " " + .title' | \
+    fzf-tmux | \
+    awk '{print $1}' | \
+    sed -e 's/\#//'
+  }
+
+PR=$(select_pr)
+
+if [ -z "${PR}" ]
+then
+  echo "No pull request selected"
+else
+  gh pr comment $PR -b "@dependabot merge"
+fi
+
