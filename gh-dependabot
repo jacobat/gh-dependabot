@@ -8,7 +8,7 @@ fi
 
 select_pr() {
   gh pr list --json number,author,title \
-    --jq '.[] | select(.author.login == "dependabot") | "#" + (.number|tostring) + " " + .title' | \
+    --jq '.[] | select(.author.login == "app/dependabot") | "#" + (.number|tostring) + " " + .title' | \
     fzf-tmux | \
     awk '{print $1}' | \
     sed -e 's/\#//'
