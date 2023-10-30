@@ -7,9 +7,16 @@ if ! type -p fzf >/dev/null; then
 fi
 
 select_pr() {
-  gh pr list --json number,author,title \
-    --jq '.[] | select(.author.login == "app/dependabot") | "#" + (.number|tostring) + " " + .title' | \
-    fzf-tmux | \
+  gh pr list --app dependabot --json number,author,title,statusCheckRollup | \
+    jq -r '.[] | "#" + (.number|tostring) + " " + 
+      if .statusCheckRollup | all(.state == "SUCCESS") then
+        "\u001b[32m"
+      else
+        "\u001b[31m"
+      end +
+      .title +
+      "\u001b[0m"' | \
+    fzf-tmux --ansi | \
     awk '{print $1}' | \
     sed -e 's/\#//'
   }
