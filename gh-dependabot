@@ -9,7 +9,8 @@ fi
 select_pr() {
   gh pr list --app dependabot --json number,author,title,statusCheckRollup | \
     jq -r '.[] | "#" + (.number|tostring) + " " + 
-      if .statusCheckRollup | all(.state == "SUCCESS") then
+      if (.statusCheckRollup | all(.state == "SUCCESS" and .__typename == "StatusContext")) or
+         (.statusCheckRollup | all(.conclusion == "SUCCESS" and .__typename == "CheckRun")) then
         "\u001b[32m"
       else
         "\u001b[31m"
