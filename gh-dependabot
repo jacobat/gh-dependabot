@@ -28,6 +28,7 @@ if [ -z "${PR}" ]
 then
   echo "No pull request selected"
 else
-  gh pr comment $PR -b "@dependabot merge"
+  echo gh pr merge "$PR" --auto --merge --delete-branch
+  gh pr merge "$PR" --auto --merge --delete-branch
 fi
 
